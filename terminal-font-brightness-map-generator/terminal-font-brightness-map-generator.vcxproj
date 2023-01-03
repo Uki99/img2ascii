@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{37de3b23-8170-4438-ad6a-a839890ac711}</ProjectGuid>
-    <RootNamespace>img2ascii</RootNamespace>
+    <ProjectGuid>{0c723d6f-605e-412f-be89-3f5a0a1ba692}</ProjectGuid>
+    <RootNamespace>terminalfontbrightnessmapgenerator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,24 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <SourcePath>$(SourcePath)</SourcePath>
-    <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -148,11 +147,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\img2ascii.hpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\img2ascii.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClInclude Include="fontdata.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
