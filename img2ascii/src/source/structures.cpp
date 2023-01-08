@@ -1,6 +1,6 @@
 #include "structures.hpp"
 
-Section::Section(INT posX, INT posY, UINT width, UINT height, Bitmap* image)
+Section::Section(INT posX, INT posY, UINT width, UINT height, Bitmap* image, BOOL disection_enabled)
 {
 	this->image = image;
 	this->posX = posX;
@@ -9,6 +9,15 @@ Section::Section(INT posX, INT posY, UINT width, UINT height, Bitmap* image)
 	this->height = height;
 	this->averageBrightness = 0.f;
 	memset(this->averageBrightnessMap, 0, sizeof(FLOAT) * 9);
+
+	if (disection_enabled)
+	{
+		this->calculate_disected_brightness();
+	}
+	else
+	{
+		this->calculate_average_brightness();
+	}
 }
 
 Section::Section(VOID)

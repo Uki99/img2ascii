@@ -260,16 +260,7 @@ VOID ASCIIFied::gridify(Bitmap* base)
 			INT positionX = j * sectionWidth;
 			INT positionY = i * sectionHeight;
 
-			this->sectionMap[iterator] = Section(positionX, positionY, sectionWidth, sectionHeight, base);
-
-			if (this->edge_detection)
-			{
-				this->sectionMap[iterator++].calculate_disected_brightness();
-			}
-			else
-			{
-				this->sectionMap[iterator++].calculate_average_brightness();
-			}
+			this->sectionMap[iterator++] = Section(positionX, positionY, sectionWidth, sectionHeight, base, this->edge_detection);
 		}
 	}
 
@@ -286,16 +277,7 @@ VOID ASCIIFied::gridify(Bitmap* base)
 		{
 			INT positionX = i * sectionWidth;
 
-			this->sectionMap[iterator] = Section(positionX, positionY, sectionWidth, height, base);
-
-			if (this->edge_detection)
-			{
-				this->sectionMap[iterator++].calculate_disected_brightness();
-			}
-			else
-			{
-				this->sectionMap[iterator++].calculate_average_brightness();
-			}
+			this->sectionMap[iterator++] = Section(positionX, positionY, sectionWidth, height, base, this->edge_detection);
 		}
 	}
 

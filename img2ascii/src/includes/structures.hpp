@@ -27,12 +27,11 @@ struct Section
 	FLOAT   averageBrightness;
 	FLOAT   averageBrightnessMap[9];
 
-	Section(INT posX, INT posY, UINT width, UINT height, Bitmap* image);
+	Section(INT posX, INT posY, UINT width, UINT height, Bitmap* image, BOOL disection_enabled);
 	Section(VOID);
-
-	VOID calculate_average_brightness(VOID);
-	VOID calculate_disected_brightness(VOID);
 
 private:
 	FLOAT calculate_pixel_brightness(INT x, INT y, BitmapData& imageData);
+	VOID calculate_average_brightness(VOID);
+	VOID calculate_disected_brightness(VOID);
 };
