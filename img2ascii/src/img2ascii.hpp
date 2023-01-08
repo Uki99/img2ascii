@@ -40,12 +40,15 @@ using namespace std;
 // Structure that should contain information of each character and its luma levels (brightness) of each division. 
 struct Char
 {
-	CHAR c;
+	CHAR character;
 
 	union
 	{
-		FLOAT b[9];
-		FLOAT upperLeft, upperMiddle, upperRight, middleLeft, middle, middleRight, bottomLeft, bottomMiddle, bottomRight;
+		FLOAT section_brightness[9];
+		struct
+		{
+			FLOAT TopLeft, TopMiddle, TopRight, MiddleLeft, Middle, MiddleRight, BottomLeft, BottomMiddle, BottomRight;
+		};
 	};
 };
 
