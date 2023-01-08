@@ -1,7 +1,4 @@
 #include "img2ascii.hpp"
-#include <string>
-
-using namespace std;
 
 INT wmain(INT argc, WCHAR* argv[])
 {
@@ -84,7 +81,6 @@ INT wmain(INT argc, WCHAR* argv[])
 		{
 			image.generate_image();
 		}
-
 	}
 
 	return 0;

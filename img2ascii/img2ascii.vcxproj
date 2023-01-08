@@ -18,6 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\includes\img2ascii.hpp" />
+    <ClInclude Include="src\includes\includes.hpp" />
+    <ClInclude Include="src\includes\mappings.hpp" />
+    <ClInclude Include="src\includes\structures.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\source\img2ascii.cpp" />
+    <ClCompile Include="src\source\main.cpp" />
+    <ClCompile Include="src\source\structures.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -74,22 +85,29 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)\img2ascii\src\includes;$(IncludePath)</IncludePath>
+    <SourcePath>$(VC_SourcePath);;$(SolutionDir)\img2ascii\src\source</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <SourcePath>$(SourcePath)</SourcePath>
+    <SourcePath>$(SourcePath);$(SolutionDir)\img2ascii\src\source</SourcePath>
     <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)\img2ascii\src\includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)\img2ascii\src\includes;$(IncludePath)</IncludePath>
+    <SourcePath>$(VC_SourcePath);;$(SolutionDir)\img2ascii\src\source</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)\img2ascii\src\includes;$(IncludePath)</IncludePath>
+    <SourcePath>$(VC_SourcePath);;$(SolutionDir)\img2ascii\src\source</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -147,13 +165,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="src\img2ascii.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\img2ascii.cpp" />
-    <ClCompile Include="src\main.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
