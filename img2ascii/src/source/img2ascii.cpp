@@ -2,66 +2,69 @@
 
 ASCIIFied::ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line, UINT scaled_image_width, bool gamma_brightness_correction, bool edge_detection)
 {
+	this->image_path = image_path;
 	this->chars_per_line = chars_per_line;
+	this->scaled_image_width = scaled_image_width;
+	this->gamma_brightness_correction = gamma_brightness_correction;
 	this->edge_detection = edge_detection;
+	this->image = nullptr;
+	this->scaled_image = nullptr;
 	this->decoded_art = nullptr;
+	this->section_map = nullptr;
+	this->gdiplus_token = 0;
+	this->section_map_size = 0;
+	this->char_height = 0;
 
-	if (this->chars_per_line > max_line_length)
-	{
-		cerr << "Number of characters per single line provided for ASCII art is bigger than allowed. Please provide a smaller number." << endl;
-		exit(EXIT_FAILURE);
-	}
-
-	wstring extension = this->get_image_extension(image_path);
-
-	if (extension != L"jpeg" && extension != L"jpg" && extension != L"png" && extension != L"gif" && extension != L"bmp" && extension != L"tiff")
-	{
-		cerr << "File type provided is different than supported. The supported file types are: jpg, png, gif, bmp and tiff." << endl;
-		exit(EXIT_FAILURE);
-	}
-
-	// Start Gdiplus 
+	// Initialize GDI+
 	GdiplusStartupInput gdiplusStartupInput;
-	GdiplusStartup(&this->gdiplusToken, &gdiplusStartupInput, NULL);
+	GdiplusStartup(&this->gdiplus_token, &gdiplusStartupInput, NULL);
 
-	this->image = new Bitmap(image_path);
+	if (this->chars_per_line > MAX_LINE_LENGTH)
+	{
+		cerr << "Number of characters per single line provided for ASCII art is bigger than allowed, which is " << MAX_LINE_LENGTH << ". Please provide a smaller number." << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	this->image = new Bitmap(this->image_path);
 
 	if (this->image->GetLastStatus() != Ok)
 	{
-		cerr << "Error opening the requested image file. Terminating the program." << endl;
+		cerr << "Error opening the requested image file at location [ " << this->image_path << ".Terminating the program." << endl;
+		exit(EXIT_FAILURE);
+	}
+	
+	if (!this->is_supported_bitmap_type())
+	{
+		cerr << "File type provided is different than supported. The supported file types are: jpg, png, bmp and tiff." << endl;
 		exit(EXIT_FAILURE);
 	}
 
-	this->width = this->image->GetWidth();
-	this->height = this->image->GetHeight();
-
-	// Check if height and width exceed allowed size
-	if (this->width > max_width || this->height > max_height)
+	if (!this->is_supported_bitmap_size())
 	{
-		cerr << "File width or height exceedes allowed amount. Please choose a smaller image." << endl;
+		cerr << "File width or height exceedes allowed amount. Current allowed dimension (width x height) are: " << MAX_WIDTH << " x " << MAX_HEIGHT << endl << "Please choose a smaller image." << endl;
 		exit(EXIT_FAILURE);
 	}
 
 	// Scale the input image to the desired width in pixels preserving original aspect ratio
-	this->resize_image(scaled_image_width);
+	this->resize_image(this->scaled_image_width);
 
-	if (gamma_brightness_correction)
+	if (this->gamma_brightness_correction)
 	{
-		this->apply_gamma_briCon_correction(this->scaledImage);
+		this->apply_gamma_briCon_correction(this->scaled_image);
 	}
 
 	// Calculates a suited grid for scaled bitmap and populates each section with corresponding data!
-	this->gridify(this->scaledImage);
+	this->gridify(this->scaled_image);
 }
 
 ASCIIFied::~ASCIIFied(VOID)
 {
 	delete   this->image;
-	delete   this->scaledImage;
-	delete[] this->sectionMap;
+	delete   this->scaled_image;
+	delete[] this->section_map;
 	delete[] this->decoded_art;
 
-	GdiplusShutdown(this->gdiplusToken);
+	GdiplusShutdown(this->gdiplus_token);
 }
 
 UINT ASCIIFied::get_output_width(VOID) CONST
@@ -76,12 +79,12 @@ UINT ASCIIFied::get_output_height(VOID) const
 
 Section* ASCIIFied::get_section_map(VOID) CONST
 {
-	return this->sectionMap;
+	return this->section_map;
 }
 
 UINT ASCIIFied::get_section_map_size(VOID) CONST
 {
-	return this->sectionMapSize;
+	return this->section_map_size;
 }
 
 VOID ASCIIFied::generate_image(VOID)
@@ -152,30 +155,29 @@ VOID ASCIIFied::generate_image(VOID)
 	cout << "Image saved to your desktop." << endl;
 }
 
-VOID ASCIIFied::resize_image(UINT width)
+VOID ASCIIFied::resize_image(UINT desired_width)
 {
-	FLOAT aspect_ratio = (FLOAT)width / (FLOAT)this->width;
+	auto aspect_ratio = (FLOAT)(desired_width / this->image->GetWidth());
 
 	// Calculating new dimensions
-	UINT new_width = width;
-	UINT new_height = (UINT)(this->height * aspect_ratio);
+	auto new_width = desired_width;
+	auto new_height = (UINT)(this->image->GetHeight() * aspect_ratio);
 
 	// Creating scaled image
-	this->scaledImage = new Bitmap(new_width, new_height, this->image->GetPixelFormat());
+	this->scaled_image = new Bitmap(new_width, new_height, this->image->GetPixelFormat());
 
-	Graphics g(this->scaledImage);
+	Graphics g(this->scaled_image);
 	g.SetInterpolationMode(InterpolationModeHighQualityBicubic);
 	g.SetPixelOffsetMode(PixelOffsetModeHalf);
-
 	g.DrawImage(this->image, 0, 0, new_width, new_height);
 }
 
-INT ASCIIFied::find_closest_divider(INT divisor, INT divider, bool onlyBiggerDivider)
+INT ASCIIFied::find_closest_divider(INT divisor, INT divider, bool only_bigger_divider)
 {
 	INT dividerS = divider;
 	INT dividerB = divider;
 
-	if (onlyBiggerDivider)
+	if (only_bigger_divider)
 	{
 		while (true)
 		{
@@ -202,18 +204,6 @@ INT ASCIIFied::find_closest_divider(INT divisor, INT divider, bool onlyBiggerDiv
 		dividerB++;
 		dividerS--;
 	}
-}
-
-wstring	ASCIIFied::get_image_extension(CONST WCHAR* path)
-{
-	wstring imagePath(path);
-	INT pos = imagePath.find_last_of(L".");
-	wstring extension = imagePath.substr(pos + 1);
-
-	// Conversion to lower case
-	std::transform(extension.begin(), extension.end(), extension.begin(), towlower);
-
-	return extension;
 }
 
 VOID ASCIIFied::gridify(Bitmap* base)
@@ -244,7 +234,7 @@ VOID ASCIIFied::gridify(Bitmap* base)
 
 	// Allocating memory for section map
 	UINT allocation_size = this->chars_per_line * this->char_height;
-	this->sectionMap = new Section[allocation_size];
+	this->section_map = new Section[allocation_size];
 
 
 	// Extremely important variable, it will indicate the amount of sections initiated!
@@ -260,7 +250,7 @@ VOID ASCIIFied::gridify(Bitmap* base)
 			INT positionX = j * sectionWidth;
 			INT positionY = i * sectionHeight;
 
-			this->sectionMap[iterator++] = Section(positionX, positionY, sectionWidth, sectionHeight, base, this->edge_detection);
+			this->section_map[iterator++] = Section(positionX, positionY, sectionWidth, sectionHeight, base, this->edge_detection);
 		}
 	}
 
@@ -277,12 +267,12 @@ VOID ASCIIFied::gridify(Bitmap* base)
 		{
 			INT positionX = i * sectionWidth;
 
-			this->sectionMap[iterator++] = Section(positionX, positionY, sectionWidth, height, base, this->edge_detection);
+			this->section_map[iterator++] = Section(positionX, positionY, sectionWidth, height, base, this->edge_detection);
 		}
 	}
 
 	// !!!
-	this->sectionMapSize = iterator - 1;
+	this->section_map_size = iterator - 1;
 }
 
 VOID ASCIIFied::apply_gamma_briCon_correction(Bitmap* base)
@@ -370,34 +360,66 @@ VOID ASCIIFied::decode_art(VOID)
 
 	// Memory allocation for ASCII art
 	// Multiplied by 0.2f to add more memory for new line character which isn't included in section map size itself
-	UINT allocationSize = this->sectionMapSize + (UINT)(this->sectionMapSize * 0.2f);
+	UINT allocationSize = this->section_map_size + (UINT)(this->section_map_size * 0.2f);
 	this->decoded_art = new CHAR[allocationSize];
 	memset(decoded_art, 0, allocationSize);
 
 	if (this->edge_detection)
 	{
-		for (UINT i = 0; i < this->sectionMapSize; ++i)
+		for (UINT i = 0; i < this->section_map_size; ++i)
 		{
 			if (i % line_break == 0)
 			{
 				this->decoded_art[iterator++] = '\n';
 			}
 
-			this->decoded_art[iterator++] = this->brightness_map_to_char(luma_char_map_x, this->sectionMap[i].averageBrightnessMap);
+			this->decoded_art[iterator++] = this->brightness_map_to_char(luma_char_map_x, this->section_map[i].averageBrightnessMap);
 		}
 	}
 	else
 	{
-		for (UINT i = 0; i < this->sectionMapSize; ++i)
+		for (UINT i = 0; i < this->section_map_size; ++i)
 		{
 			if (i % line_break == 0)
 			{
 				this->decoded_art[iterator++] = '\n';
 			}
 
-			this->decoded_art[iterator++] = brightness_to_char(luma_char_map, this->sectionMap[i].averageBrightness);
+			this->decoded_art[iterator++] = brightness_to_char(luma_char_map, this->section_map[i].averageBrightness);
 		}
 	}
+}
+
+bool ASCIIFied::is_supported_bitmap_type(VOID)
+{
+	if (this->image == nullptr)
+	{
+		cerr << "Section tried to access null pointer image. Terminating the program" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	array<GUID, 4> supported_bitmap_types =
+	{
+		ImageFormatJPEG,
+		ImageFormatPNG,
+		ImageFormatBMP,
+		ImageFormatTIFF
+	};
+
+	GUID image_format;
+	this->image->GetRawFormat(&image_format);
+
+	auto found = std::find(std::begin(supported_bitmap_types), std::end(supported_bitmap_types), image_format);
+
+	if (found == std::end(supported_bitmap_types))
+		return false;
+	else
+		return true;
+}
+
+bool ASCIIFied::is_supported_bitmap_size(VOID)
+{
+	return !(this->image->GetWidth() > MAX_WIDTH || this->image->GetHeight() > MAX_HEIGHT);
 }
 
 VOID ASCIIFied::output_to_console(VOID)

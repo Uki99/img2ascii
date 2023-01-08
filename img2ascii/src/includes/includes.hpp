@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <array>
 #include <map>
 #include <time.h>
 #include <algorithm>
