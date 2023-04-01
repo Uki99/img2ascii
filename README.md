@@ -22,7 +22,7 @@ This could help flat, overly exposed or underexposed images have more defined ed
 **`-e`** (**edge detection**) specifies that the program should use edge detection and output improved art by using more complex algorithm for generation Processing time is slightly increased.
 
 
-![Alt text](demonstration/example_1.png?raw=true)
+![Alt text](resources/example_1.png?raw=true)
 
 ## Algorithms
 The program features **2 distinct algorithms** for art generation.
@@ -44,7 +44,7 @@ That array is compared to *different* __**custom**__ and **precalculated** chara
 Comparing each section to the character map is basically searching for the most similar vector to the provided one out of the bunch.
 Best results after are given using [Euclidean distance] algorithm.
 
-![Alt text](demonstration/example_2.png?raw=true)
+![Alt text](resources/example_2.png?raw=true)
 
 ## TO DO:
 - Implement multithreading which should speed up the processing
