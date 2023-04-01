@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "img2ascii", "img2ascii\img2ascii.vcxproj", "{37DE3B23-8170-4438-AD6A-A839890AC711}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "img2ascii", "source\img2ascii\img2ascii.vcxproj", "{37DE3B23-8170-4438-AD6A-A839890AC711}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "terminal-font-brightness-map-generator", "terminal-font-brightness-map-generator\terminal-font-brightness-map-generator.vcxproj", "{0C723D6F-605E-412F-BE89-3F5A0A1BA692}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "terminal-font-brightness-map-generator", "source\terminal-font-brightness-map-generator\terminal-font-brightness-map-generator.vcxproj", "{0C723D6F-605E-412F-BE89-3F5A0A1BA692}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

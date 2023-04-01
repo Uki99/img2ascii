@@ -8,7 +8,6 @@ ASCIIFied::ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line, UINT scaled_i
 	this->gamma_brightness_correction = gamma_brightness_correction;
 	this->edge_detection = edge_detection;
 	this->image = nullptr;
-	this->scaled_image = nullptr;
 	this->decoded_art = nullptr;
 	this->section_map = nullptr;
 	this->gdiplus_token = 0;
@@ -46,21 +45,24 @@ ASCIIFied::ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line, UINT scaled_i
 	}
 
 	// Scale the input image to the desired width in pixels preserving original aspect ratio
-	this->resize_image(this->scaled_image_width);
+	// It will not resize the input image if 0 is provided as scaled image width
+	if (this->scaled_image_width != 0)
+	{
+		this->resize_image(this->scaled_image_width);
+	}
 
 	if (this->gamma_brightness_correction)
 	{
-		this->apply_gamma_briCon_correction(this->scaled_image);
+		this->apply_gamma_brightness_contrast_correction(this->image);
 	}
 
 	// Calculates a suited grid for scaled bitmap and populates each section with corresponding data!
-	this->gridify(this->scaled_image);
+	this->gridify(this->image);
 }
 
 ASCIIFied::~ASCIIFied(VOID)
 {
 	delete   this->image;
-	delete   this->scaled_image;
 	delete[] this->section_map;
 	delete[] this->decoded_art;
 
@@ -164,12 +166,13 @@ VOID ASCIIFied::resize_image(UINT desired_width)
 	auto new_height = (UINT)(this->image->GetHeight() * aspect_ratio);
 
 	// Creating scaled image
-	this->scaled_image = new Bitmap(new_width, new_height, this->image->GetPixelFormat());
+	Bitmap* scaled_image = new Bitmap(new_width, new_height, this->image->GetPixelFormat());
 
-	Graphics g(this->scaled_image);
-	g.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-	g.SetPixelOffsetMode(PixelOffsetModeHalf);
+	Graphics g(scaled_image);
 	g.DrawImage(this->image, 0, 0, new_width, new_height);
+
+	delete this->image;
+	this->image = scaled_image;
 }
 
 INT ASCIIFied::find_closest_divider(INT divisor, INT divider, bool only_bigger_divider)
@@ -275,10 +278,10 @@ VOID ASCIIFied::gridify(Bitmap* base)
 	this->section_map_size = iterator - 1;
 }
 
-VOID ASCIIFied::apply_gamma_briCon_correction(Bitmap* base)
+VOID ASCIIFied::apply_gamma_brightness_contrast_correction(Bitmap* base)
 {
-	LevelsParams levels_params;
-	BrightnessContrastParams briConParams;
+	LevelsParams levels_params { };
+	BrightnessContrastParams briConParams { };
 
 	// Negative gamma correction (influencing midtones on levels = gamma correction)
 	levels_params.highlight = 100;

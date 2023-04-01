@@ -9,7 +9,6 @@ INT wmain(INT argc, WCHAR* argv[])
 	INT          scaled_resolution = SCALED_BITMAP_WIDTH;
 	bool         gamma_contrast_correction = false;
 	bool         edge_detection = false;
-	bool         performance_mode = false;
 	CONST WCHAR* image_path;
 
 	if (argc < 2)
@@ -73,11 +72,11 @@ INT wmain(INT argc, WCHAR* argv[])
 		image.output_to_console();
 
 		cout << endl << endl << "Do you want to generate an image for this art? (Y/N)" << endl;
-		CHAR a[100];
+		string input;
 		cout << "> ";
-		cin >> a;
+		cin >> input;
 
-		if (tolower(a[0]) == 'y' && strlen(a) < 2)
+		if (tolower(input[0]) == 'y' && input.length() < 2)
 		{
 			image.generate_image();
 		}

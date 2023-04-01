@@ -22,7 +22,7 @@
 class ASCIIFied
 {
 public:
-	ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line = MEDIUM, UINT scaled_image_width = SCALED_BITMAP_WIDTH, bool gamma_brightness_correction = false, bool edge_detection = false);
+	ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line = MEDIUM, UINT scaled_image_width = 0, bool gamma_brightness_correction = false, bool edge_detection = false);
 	~ASCIIFied(VOID);
 
 	UINT     get_output_width(VOID) CONST;
@@ -34,7 +34,6 @@ public:
 
 private:
 	Bitmap* image;
-	Bitmap* scaled_image;
 	CONST WCHAR* image_path;
 	UINT  chars_per_line;
 	UINT  scaled_image_width;
@@ -49,7 +48,7 @@ private:
 	VOID    resize_image(UINT width);
 	INT     find_closest_divider(INT divisor, INT divider, bool only_bigger_divider);
 	VOID    gridify(Bitmap* base);
-	VOID    apply_gamma_briCon_correction(Bitmap* base);
+	VOID    apply_gamma_brightness_contrast_correction(Bitmap* base);
 	FLOAT   similarity(CONST FLOAT a[], FLOAT b[]);
 	CHAR    brightness_to_char(CONST map<FLOAT, vector<CHAR>>& map, FLOAT brightness);
 	CHAR    brightness_map_to_char(const Char map[], FLOAT brightness_map[]);

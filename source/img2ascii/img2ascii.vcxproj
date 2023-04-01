@@ -18,11 +18,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\includes\img2ascii.hpp" />
+    <ClInclude Include="src\includes\includes.hpp" />
+    <ClInclude Include="src\includes\mappings.hpp" />
+    <ClInclude Include="src\includes\structures.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\source\img2ascii.cpp" />
+    <ClCompile Include="src\source\main.cpp" />
+    <ClCompile Include="src\source\structures.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{0c723d6f-605e-412f-be89-3f5a0a1ba692}</ProjectGuid>
-    <RootNamespace>terminalfontbrightnessmapgenerator</RootNamespace>
+    <ProjectGuid>{37de3b23-8170-4438-ad6a-a839890ac711}</ProjectGuid>
+    <RootNamespace>img2ascii</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,23 +83,31 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <OutDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)source\img2ascii\src\includes;$(IncludePath)</IncludePath>
+    <SourcePath>$(VC_SourcePath);;$(SolutionDir)\img2ascii\src\source</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <SourcePath>$(SourcePath);$(SolutionDir)\img2ascii\src\source</SourcePath>
+    <OutDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)source\img2ascii\src\includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <OutDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)source\img2ascii\src\includes;$(IncludePath)</IncludePath>
+    <SourcePath>$(VC_SourcePath);;$(SolutionDir)\img2ascii\src\source</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)terminal-font-brightness-map-generator\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <OutDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)source\img2ascii\build\$(PlatformShortName)\$(Configuration)\compilation_files\</IntDir>
+    <IncludePath>$(SolutionDir)source\img2ascii\src\includes;$(IncludePath)</IncludePath>
+    <SourcePath>$(VC_SourcePath);;$(SolutionDir)\img2ascii\src\source</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -96,7 +115,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,7 +129,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +143,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,7 +157,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,13 +165,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\fontdata.h" />
-    <ClInclude Include="src\includes.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
