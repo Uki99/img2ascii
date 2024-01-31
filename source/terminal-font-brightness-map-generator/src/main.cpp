@@ -24,10 +24,15 @@ void generateData()
 {
     float maxB[9] = { 0 };
 
+	// For each printable ASCII character in table...
     for (auto c = ' '; c <= '~'; ++c)
     {
+		// Offset regarding to the first printable character in ASCII table (space).
+		// It could be 0, 1, 2, 3...
         auto offset = (c - ' ') * 8; // Multiply by 8 because it's font width. (Terminal, 8x12px)
-        int count[9] = { 0 };
+        
+		// Resetting these.
+		int count[9] = { 0 };
         vector<float> brightness;
 
 		// Counting number of lit pixels in each section
@@ -101,7 +106,7 @@ void generateData()
         character_brightness_map.push_back({ c, brightness[0], brightness[1], brightness[2], brightness[3], brightness[4], brightness[5], brightness[6], brightness[7] });
     }
 
-	// Normalize
+	// Normalize brightness in range 0-1 using maximum overall brightness per each section
     for (auto& character_element : character_brightness_map)
     {
         for (int i = 0; i < 9; ++i)
@@ -114,9 +119,12 @@ void generateData()
 
 int main(void)
 {
-    generateData();
+	generateData();
     string final_map = "static const Char luma_char_map_x[95] =\n{\n";
     char character_map_element_tok[] = "\t{ \'%c\', %ff, %ff, %ff, %ff, %ff, %ff, %ff, %ff, %ff },\n";
+
+	// Classic example of metaprogramming, in which we generate a c++ structure using an automated program.
+	// https://en.wikipedia.org/wiki/Metaprogramming
 
     for (auto& ch : character_brightness_map)
     {

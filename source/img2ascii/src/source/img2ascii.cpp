@@ -18,17 +18,17 @@ ASCIIFied::ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line, UINT scaled_i
 	GdiplusStartupInput gdiplusStartupInput;
 	GdiplusStartup(&this->gdiplus_token, &gdiplusStartupInput, NULL);
 
-	if (this->chars_per_line > MAX_LINE_LENGTH)
-	{
-		cerr << "Number of characters per single line provided for ASCII art is bigger than allowed, which is " << MAX_LINE_LENGTH << ". Please provide a smaller number." << endl;
-		exit(EXIT_FAILURE);
-	}
-
 	this->image = new Bitmap(this->image_path);
 
 	if (this->image->GetLastStatus() != Ok)
 	{
-		cerr << "Error opening the requested image file at location [ " << this->image_path << ".Terminating the program." << endl;
+		cerr << "Error opening the requested image file at location [ " << this->image_path << " ]. Terminating the program." << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (this->chars_per_line > MAX_LINE_LENGTH)
+	{
+		cerr << "Number of characters per single line provided for ASCII art is bigger than allowed, which is " << MAX_LINE_LENGTH << ". Please provide a smaller number." << endl;
 		exit(EXIT_FAILURE);
 	}
 	
@@ -58,6 +58,9 @@ ASCIIFied::ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line, UINT scaled_i
 
 	// Calculates a suited grid for scaled bitmap and populates each section with corresponding data!
 	this->gridify(this->image);
+
+	// Decode the art from section map data
+	this->decode_art();
 }
 
 ASCIIFied::~ASCIIFied(VOID)
@@ -171,27 +174,16 @@ VOID ASCIIFied::resize_image(UINT desired_width)
 	Graphics g(scaled_image);
 	g.DrawImage(this->image, 0, 0, new_width, new_height);
 
+	// Free memory from old image and asign new pointer
 	delete this->image;
+	this->image = scaled_image;
 	this->image = scaled_image;
 }
 
-INT ASCIIFied::find_closest_divider(INT divisor, INT divider, bool only_bigger_divider)
+INT ASCIIFied::find_closest_divider(INT divisor, INT divider)
 {
 	INT dividerS = divider;
 	INT dividerB = divider;
-
-	if (only_bigger_divider)
-	{
-		while (true)
-		{
-			if (divisor % dividerB == 0)
-			{
-				return dividerB;
-			}
-
-			dividerB++;
-		}
-	}
 
 	while (true)
 	{
@@ -217,16 +209,10 @@ VOID ASCIIFied::gridify(Bitmap* base)
 	// Section width and height are expressed in pixels!
 
 	// Section width is actually the closest natural divider of scaled image width
-	UINT sectionWidth = scaled_width / this->find_closest_divider(scaled_width, this->chars_per_line, false);
-
-	// Section height is at least 1.6 times its width and must be devisible by height of the image. Latin alphabet characters are always taller than they are wide.
-	// 1.6 Works well for font Terminal 8x12px but other values might suit better for different fonts
-
-	// Disabled because most of the time the closest full divider of image height is much more than 1.6 times bigger than section width, yielding highly distorted (elongated) ASCII art 
-	//UINT sectionHeight = this->find_closest_divider(scaled_height, (INT)round((FLOAT)sectionWidth * 1.6f), true);
+	UINT sectionWidth = scaled_width / this->find_closest_divider(scaled_width, this->chars_per_line);
 
 	// Mathematically rounding the result 
-	UINT sectionHeight = (INT)round((FLOAT)sectionWidth * 1.6f);
+	UINT sectionHeight = (INT)round((FLOAT)sectionWidth * FONT_ASPECT_RATIO);
 
 	// Updates chars_per_line and char_height with values that are actually going to be used.
 	this->chars_per_line = scaled_width / sectionWidth;
@@ -298,6 +284,7 @@ VOID ASCIIFied::apply_gamma_brightness_contrast_correction(Bitmap* base)
 	BrightnessContrast briCon;
 	briCon.SetParameters(&briConParams);
 
+	// Applying corrections
 	base->ApplyEffect(&levels, NULL);
 	base->ApplyEffect(&briCon, NULL);
 }
@@ -451,9 +438,6 @@ VOID ASCIIFied::output_to_console(VOID)
 
 	// Setting console character width and height properties so that art isn't cut off by smaller screen buffer for console
 	SetConsoleScreenBufferInfoEx(readHandle, &info);
-
-	// Decode the art from section map data
-	this->decode_art();
 
 	cout << this->decoded_art << endl << endl;
 }

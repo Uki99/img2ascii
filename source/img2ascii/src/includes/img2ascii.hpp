@@ -19,6 +19,10 @@
 // This defines maximum allowed character amount in one line for ASCII art
 #define MAX_LINE_LENGTH 400
 
+// Section height is at least 1.6 times its width and must be devisible by height of the image. Latin alphabet characters are always taller than they are wide.
+// 1.6 Works well for font Terminal 8x12px but other values might suit better for different fonts
+#define FONT_ASPECT_RATIO 1.6f
+
 class ASCIIFied
 {
 public:
@@ -46,7 +50,7 @@ private:
 	UINT  char_height;
 	
 	VOID    resize_image(UINT width);
-	INT     find_closest_divider(INT divisor, INT divider, bool only_bigger_divider);
+	INT     find_closest_divider(INT divisor, INT divider);
 	VOID    gridify(Bitmap* base);
 	VOID    apply_gamma_brightness_contrast_correction(Bitmap* base);
 	FLOAT   similarity(CONST FLOAT a[], FLOAT b[]);

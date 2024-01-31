@@ -1,7 +1,8 @@
 #pragma once
 #include "includes.hpp"
 
-// Structure that should contain information of each character and its luma levels (brightness) of each division. 
+// Structure that should contain information of each character and its luma levels (brightness) of each division.
+// This structure is reserved for font character data only.
 struct Char
 {
 	CHAR character;
@@ -17,6 +18,7 @@ struct Char
 };
 
 // Structure that should contain information of each section of a "gridified" image
+// This structure is reserved for processing bitmap image data only.
 struct Section
 {
 	Bitmap* image;
