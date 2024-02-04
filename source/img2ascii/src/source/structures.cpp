@@ -1,22 +1,22 @@
 #include "structures.hpp"
 
-Section::Section(INT posX, INT posY, UINT width, UINT height, Bitmap* image, BOOL disection_enabled)
+Section::Section(INT posX, INT posY, UINT width, UINT height, Bitmap* image, BOOL advanced_algorithm)
 {
 	this->image = image;
 	this->posX = posX;
 	this->posY = posY;
 	this->width = width;
 	this->height = height;
-	this->averageBrightness = 0.f;
-	memset(this->averageBrightnessMap, 0, sizeof(FLOAT) * 9);
+	this->average_brightness = 0.f;
+	memset(this->average_brightness_map, 0, sizeof(FLOAT) * 9);
 
-	if (disection_enabled)
+	if (advanced_algorithm)
 	{
 		this->calculate_disected_brightness();
 	}
 	else
 	{
-		this->calculate_average_brightness();
+		this->calculate_average_brightness_fast();
 	}
 }
 
@@ -27,11 +27,11 @@ Section::Section(VOID)
 	this->width = 0;
 	this->posX = 0;
 	this->posY = 0;
-	this->averageBrightness = 0;
-	memset(this->averageBrightnessMap, 0, sizeof(FLOAT) * 9);
+	this->average_brightness = 0;
+	memset(this->average_brightness_map, 0, sizeof(FLOAT) * 9);
 }
 
-VOID Section::calculate_average_brightness(VOID)
+VOID Section::calculate_average_brightness_fast(VOID)
 {
 	if (this->image == nullptr)
 	{
@@ -50,11 +50,12 @@ VOID Section::calculate_average_brightness(VOID)
 	{
 		for (UINT j = this->posY; j < this->posY + this->height; ++j)
 		{
-			this->averageBrightness = this->averageBrightness + this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness = this->average_brightness + this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightness = this->averageBrightness / (FLOAT)(this->width * this->height);
+	// This is final average brightness of the section
+	this->average_brightness = this->average_brightness / (FLOAT)(this->width * this->height);
 
 	// Unlock the memory
 	this->image->UnlockBits(&image_data);
@@ -85,11 +86,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY; j < this->posY + h25; ++j)
 		{
-			this->averageBrightnessMap[0] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[0] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[0] = this->averageBrightnessMap[0] / (w25 * h25);
+	this->average_brightness_map[0] = this->average_brightness_map[0] / (w25 * h25);
 
 
 	// Top Middle
@@ -97,11 +98,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY; j < this->posY + h25; ++j)
 		{
-			this->averageBrightnessMap[1] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[1] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[1] = this->averageBrightnessMap[1] / (w50 * h25);
+	this->average_brightness_map[1] = this->average_brightness_map[1] / (w50 * h25);
 
 
 	// Top Right
@@ -109,11 +110,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY; j < this->posY + h25; ++j)
 		{
-			this->averageBrightnessMap[2] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[2] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[2] = this->averageBrightnessMap[2] / (w25 * h25);
+	this->average_brightness_map[2] = this->average_brightness_map[2] / (w25 * h25);
 
 
 	// Middle left
@@ -121,11 +122,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY + h25; j < this->posY + h25 + h50; ++j)
 		{
-			this->averageBrightnessMap[3] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[3] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[3] = this->averageBrightnessMap[3] / (w25 * h50);
+	this->average_brightness_map[3] = this->average_brightness_map[3] / (w25 * h50);
 
 
 	// Middle (!!!)
@@ -133,11 +134,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY + (INT)(h25 * 2 / 3); j < ((this->posY + (INT)this->height) - (INT)(h25 * 2 / 3)); ++j)
 		{
-			this->averageBrightnessMap[4] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[4] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[4] = this->averageBrightnessMap[4] / (w75 * h67);
+	this->average_brightness_map[4] = this->average_brightness_map[4] / (w75 * h67);
 
 
 	// Middle right
@@ -145,11 +146,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY + h25; j < this->posY + h25 + h50; ++j)
 		{
-			this->averageBrightnessMap[5] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[5] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[5] = this->averageBrightnessMap[5] / (w25 * h50);
+	this->average_brightness_map[5] = this->average_brightness_map[5] / (w25 * h50);
 
 
 	// Bottom left
@@ -157,11 +158,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY + h50 + h25; j < this->posY + (INT)this->height; ++j)
 		{
-			this->averageBrightnessMap[6] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[6] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[6] = this->averageBrightnessMap[6] / (w25 * h25);
+	this->average_brightness_map[6] = this->average_brightness_map[6] / (w25 * h25);
 
 
 	// Bottom middle
@@ -169,11 +170,11 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY + h50 + h25; j < this->posY + (INT)this->height; ++j)
 		{
-			this->averageBrightnessMap[7] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[7] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[7] = this->averageBrightnessMap[7] / (w50 * h25);
+	this->average_brightness_map[7] = this->average_brightness_map[7] / (w50 * h25);
 
 
 	// Bottom right
@@ -181,23 +182,24 @@ VOID Section::calculate_disected_brightness(VOID)
 	{
 		for (INT j = this->posY + h50 + h25; j < this->posY + (INT)this->height; ++j)
 		{
-			this->averageBrightnessMap[8] += this->calculate_pixel_brightness(i, j, image_data);
+			this->average_brightness_map[8] += this->calculate_pixel_brightness(i, j, image_data);
 		}
 	}
 
-	this->averageBrightnessMap[8] = this->averageBrightnessMap[8] / (w25 * h25);
+	this->average_brightness_map[8] = this->average_brightness_map[8] / (w25 * h25);
+
 
 	// Unlock the bits once done with calculations
 	this->image->UnlockBits(&image_data);
 }
 
-FLOAT Section::calculate_pixel_brightness(INT x, INT y, BitmapData& imageData)
+FLOAT Section::calculate_pixel_brightness(INT x, INT y, BitmapData& image_data)
 {
 	// Calculating average brightness of a single pixel from the given RGB value for pixel positioned at XY coordinate
 	// Pixel luminance = (0.2126 * R + 0.7152 * G + 0.0722 * B)
 	// https://en.wikipedia.org/wiki/Relative_luminance
 
-	byte* pixel = (byte*)imageData.Scan0 + (y * imageData.Stride);
+	byte* pixel = (byte*)image_data.Scan0 + (y * image_data.Stride);
 
 	// Watch out for actual order (BGR)!
 	// 3 stands for bytes per pixel

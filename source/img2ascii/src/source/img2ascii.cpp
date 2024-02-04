@@ -1,12 +1,12 @@
 #include "img2ascii.hpp"
 
-ASCIIFied::ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line, UINT scaled_image_width, bool gamma_brightness_correction, bool edge_detection)
+ASCIIFied::ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line, UINT scaled_image_width, bool gamma_brightness_correction, bool advaned_algorithm)
 {
 	this->image_path = image_path;
 	this->chars_per_line = chars_per_line;
 	this->scaled_image_width = scaled_image_width;
 	this->gamma_brightness_correction = gamma_brightness_correction;
-	this->edge_detection = edge_detection;
+	this->advanced_algorithm = advaned_algorithm;
 	this->image = nullptr;
 	this->decoded_art = nullptr;
 	this->section_map = nullptr;
@@ -77,7 +77,7 @@ UINT ASCIIFied::get_output_width(VOID) CONST
 	return this->chars_per_line;
 }
 
-UINT ASCIIFied::get_output_height(VOID) const
+UINT ASCIIFied::get_output_height(VOID) CONST
 {
 	return this->char_height;
 }
@@ -239,7 +239,7 @@ VOID ASCIIFied::gridify(Bitmap* base)
 			INT positionX = j * sectionWidth;
 			INT positionY = i * sectionHeight;
 
-			this->section_map[iterator++] = Section(positionX, positionY, sectionWidth, sectionHeight, base, this->edge_detection);
+			this->section_map[iterator++] = Section(positionX, positionY, sectionWidth, sectionHeight, base, this->advanced_algorithm);
 		}
 	}
 
@@ -256,7 +256,7 @@ VOID ASCIIFied::gridify(Bitmap* base)
 		{
 			INT positionX = i * sectionWidth;
 
-			this->section_map[iterator++] = Section(positionX, positionY, sectionWidth, height, base, this->edge_detection);
+			this->section_map[iterator++] = Section(positionX, positionY, sectionWidth, height, base, this->advanced_algorithm);
 		}
 	}
 
@@ -289,7 +289,7 @@ VOID ASCIIFied::apply_gamma_brightness_contrast_correction(Bitmap* base)
 	base->ApplyEffect(&briCon, NULL);
 }
 
-FLOAT ASCIIFied::similarity(CONST FLOAT a[], FLOAT b[])
+FLOAT ASCIIFied::vector_similarity(CONST FLOAT a[], FLOAT b[])
 {
 	// Implementation of euclidean distance
 	// https://en.wikipedia.org/wiki/Euclidean_distance
@@ -307,12 +307,12 @@ FLOAT ASCIIFied::similarity(CONST FLOAT a[], FLOAT b[])
 	return similarity;
 }
 
-CHAR ASCIIFied::brightness_to_char(CONST map<FLOAT, vector<CHAR>>& map, FLOAT brightness)
+CHAR ASCIIFied::decode_section(CONST map<FLOAT, vector<CHAR>>& character_brightness_map, FLOAT character_brightness)
 {
-	auto it = min_element(map.begin(), map.end(),
+	auto it = min_element(character_brightness_map.begin(), character_brightness_map.end(),
 		[&](CONST auto& p1, CONST auto& p2)
 		{
-			return abs(p1.first - brightness) < abs(p2.first - brightness);
+			return abs(p1.first - character_brightness) < abs(p2.first - character_brightness);
 		});
 
 	srand((UINT)time(NULL));
@@ -321,20 +321,20 @@ CHAR ASCIIFied::brightness_to_char(CONST map<FLOAT, vector<CHAR>>& map, FLOAT br
 	return it->second[randomIndex];
 }
 
-CHAR ASCIIFied::brightness_map_to_char(CONST Char map[], FLOAT brightness_map[])
+CHAR ASCIIFied::advanced_algorithm_decode_section(CONST DisectedChar desected_character_brightness_map[], FLOAT disected_section[])
 {
-	FLOAT similarity_map[95];
+	FLOAT similarity_map[95] { };
 
 	// Contains euclidean distance of each character to the provided brightness map of a single section.
 	// The smallest distance is actually the most similar array on a chart
 	for (INT i = 0; i < 95; i++)
 	{
-		similarity_map[i] = this->similarity(map[i].section_brightness, brightness_map);
+		similarity_map[i] = this->vector_similarity(desected_character_brightness_map[i].section_brightness, disected_section);
 	}
 
 	INT char_index = distance(similarity_map, min_element(similarity_map, similarity_map + 95));
 
-	return map[char_index].character;
+	return desected_character_brightness_map[char_index].character;
 }
 
 VOID ASCIIFied::decode_art(VOID)
@@ -354,7 +354,7 @@ VOID ASCIIFied::decode_art(VOID)
 	this->decoded_art = new CHAR[allocationSize];
 	memset(decoded_art, 0, allocationSize);
 
-	if (this->edge_detection)
+	if (this->advanced_algorithm)
 	{
 		for (UINT i = 0; i < this->section_map_size; ++i)
 		{
@@ -363,7 +363,7 @@ VOID ASCIIFied::decode_art(VOID)
 				this->decoded_art[iterator++] = '\n';
 			}
 
-			this->decoded_art[iterator++] = this->brightness_map_to_char(luma_char_map_x, this->section_map[i].averageBrightnessMap);
+			this->decoded_art[iterator++] = this->advanced_algorithm_decode_section(advanced_algorithm_character_map, this->section_map[i].average_brightness_map);
 		}
 	}
 	else
@@ -375,7 +375,7 @@ VOID ASCIIFied::decode_art(VOID)
 				this->decoded_art[iterator++] = '\n';
 			}
 
-			this->decoded_art[iterator++] = brightness_to_char(luma_char_map, this->section_map[i].averageBrightness);
+			this->decoded_art[iterator++] = decode_section(fast_character_map, this->section_map[i].average_brightness);
 		}
 	}
 }
@@ -414,7 +414,7 @@ bool ASCIIFied::is_supported_bitmap_size(VOID)
 
 VOID ASCIIFied::output_to_console(VOID)
 {
-	CONSOLE_FONT_INFOEX cfi;
+	CONSOLE_FONT_INFOEX cfi { };
 
 	cfi.cbSize = sizeof(cfi);
 	cfi.nFont = 0;

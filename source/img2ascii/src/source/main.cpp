@@ -5,7 +5,7 @@ INT wmain(INT argc, WCHAR* argv[])
 	// Load arguments passed as wide strigns into the vector container
 	vector<wstring> arguments(argv, argv + argc);
 
-	INT          line_width = MEDIUM;
+	INT          line_width = MEDIUM_W128;
 	INT          scaled_resolution = SCALED_BITMAP_WIDTH;
 	bool         gamma_contrast_correction = false;
 	bool         edge_detection = false;
@@ -54,15 +54,15 @@ INT wmain(INT argc, WCHAR* argv[])
 				}
 				else if (s == L"-tiny")
 				{
-					line_width = TINY;
+					line_width = TINY_W96;
 				}
 				else if (s == L"-medium")
 				{
-					line_width = MEDIUM;
+					line_width = MEDIUM_W128;
 				}
 				else if (s == L"-large")
 				{
-					line_width = LARGE;
+					line_width = LARGE_W192;
 				}
 			}
 		}

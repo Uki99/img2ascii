@@ -1,7 +1,7 @@
 #pragma once
 #include "includes.hpp"
 
-static const map<FLOAT, vector<CHAR>> luma_char_map =
+static CONST map<FLOAT, vector<CHAR>> fast_character_map =
 {
 	{ 0.000000f, {' '} },
 	{ 0.133333f, {'.'} },
@@ -35,7 +35,7 @@ static const map<FLOAT, vector<CHAR>> luma_char_map =
 	{ 1.000000f, {'0', 'M', 'N'} }
 };
 
-static const Char luma_char_map_x[95] =
+static CONST DisectedChar advanced_algorithm_character_map[95] =
 {
 	{ ' ',  0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, 0.000000f },
 	{ '!',  0.250000f, 0.625000f, 0.000000f, 0.166667f, 0.555556f, 0.000000f, 0.000000f, 0.222222f, 0.000000f },

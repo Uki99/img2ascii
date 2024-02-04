@@ -5,9 +5,9 @@
 
 
 // Macros for predefined character width of ASCII art compatible with 1920px width
-#define TINY   96
-#define MEDIUM 128
-#define LARGE  192
+#define TINY_W96    96
+#define MEDIUM_W128 128
+#define LARGE_W192  192
 
 // Macro for scaled bitmap width. Bigger = more detail and SLOWER to process. 
 #define SCALED_BITMAP_WIDTH 1920
@@ -26,7 +26,7 @@
 class ASCIIFied
 {
 public:
-	ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line = MEDIUM, UINT scaled_image_width = 0, bool gamma_brightness_correction = false, bool edge_detection = false);
+	ASCIIFied(CONST WCHAR* image_path, UINT chars_per_line = MEDIUM_W128, UINT scaled_image_width = 0, bool gamma_brightness_correction = false, bool advanced_algorithm = false);
 	~ASCIIFied(VOID);
 
 	UINT     get_output_width(VOID) CONST;
@@ -37,25 +37,25 @@ public:
 	VOID     output_to_console(VOID);
 
 private:
-	Bitmap* image;
+	Bitmap*      image;
 	CONST WCHAR* image_path;
-	UINT  chars_per_line;
-	UINT  scaled_image_width;
-	bool  gamma_brightness_correction;
-	bool  edge_detection;
-	CHAR* decoded_art;
-	Section* section_map;
-	ULONG_PTR gdiplus_token;
-	UINT  section_map_size;
-	UINT  char_height;
+	UINT		 chars_per_line;
+	UINT		 scaled_image_width;
+	bool		 gamma_brightness_correction;
+	bool		 advanced_algorithm;
+	CHAR*		 decoded_art;
+	Section*	 section_map;
+	ULONG_PTR	 gdiplus_token;
+	UINT		 section_map_size;
+	UINT		 char_height;
 	
 	VOID    resize_image(UINT width);
 	INT     find_closest_divider(INT divisor, INT divider);
 	VOID    gridify(Bitmap* base);
 	VOID    apply_gamma_brightness_contrast_correction(Bitmap* base);
-	FLOAT   similarity(CONST FLOAT a[], FLOAT b[]);
-	CHAR    brightness_to_char(CONST map<FLOAT, vector<CHAR>>& map, FLOAT brightness);
-	CHAR    brightness_map_to_char(const Char map[], FLOAT brightness_map[]);
+	FLOAT   vector_similarity(CONST FLOAT a[], FLOAT b[]);
+	CHAR    decode_section(CONST map<FLOAT, vector<CHAR>>& character_brightness_map, FLOAT character_brightness);
+	CHAR    advanced_algorithm_decode_section(CONST DisectedChar desected_character_brightness_map[], FLOAT disected_section[]);
 	bool    is_supported_bitmap_type(VOID);
 	bool    is_supported_bitmap_size(VOID);
 	VOID    decode_art(VOID);
